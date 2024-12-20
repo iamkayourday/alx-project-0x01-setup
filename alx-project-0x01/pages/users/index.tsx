@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import UserModal from "@/components/common/UserModal";
-import { UserData } from "@/interfaces";
+import { UserData} from "@/interfaces";
+import { PostProps } from "@/interfaces";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import UserCard from "@/components/common/UserCard"; // Import the UserCard
@@ -12,10 +13,21 @@ interface UsersProps {
 const Users: React.FC<UsersProps> = ({ initialUsers }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [users, setUsers] = useState<UserData[]>(initialUsers);
+  const [posts, setPosts] = useState<PostProps[]>([]); // New state to store posts
 
   const handleAddUser = (newUser: UserData) => {
     setUsers((prevUsers) => [...prevUsers, { ...newUser, id: prevUsers.length + 1 }]);
   };
+
+  // Fetch posts associated with users when the component mounts
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+      const data = await response.json();
+      setPosts(data); // Set the posts
+    };
+    fetchPosts();
+  }, []);
 
   return (
     <>
@@ -30,7 +42,23 @@ const Users: React.FC<UsersProps> = ({ initialUsers }) => {
         </button>
         <div className="mt-4">
           {users.map((user) => (
-            <UserCard key={user.id} user={user} /> // Use UserCard here
+            <div key={user.id}>
+              <UserCard user={user} /> {/* Display user data */}
+              {/* Display posts associated with the current user */}
+              <div className="mt-4">
+                <h3 className="text-xl font-semibold">Posts by {user.name}</h3>
+                <div className="mt-2">
+                  {posts
+                    .filter((post) => post.userId === user.id) // Filter posts by userId
+                    .map((post) => (
+                      <div key={post.id} className="border-b py-2">
+                        <h4 className="text-lg font-semibold">{post.title}</h4>
+                        <p>{post.body}</p>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
           ))}
         </div>
         {isModalOpen && (

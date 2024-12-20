@@ -1,18 +1,25 @@
 import PostCard from "@/components/common/PostCard";
 import PostModal from "@/components/common/PostModal";
 import Header from "@/components/layout/Header";
-import { PostData, PostProps } from "@/interfaces";
+import { PostData} from "@/interfaces";
+import { PostProps } from "@/interfaces";
 import { useState } from "react";
 
 const Posts: React.FC<{ posts: PostProps[] }> = ({ posts }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [userPosts, setUserPosts] = useState(posts);
+  const [post, setPost] = useState<PostData | null>(null); 
 
   const handleAddPost = (newPost: PostData) => {
     setUserPosts((prevPosts) => [
       ...prevPosts,
       { ...newPost, id: prevPosts.length + 1 },
     ]);
+  };
+
+  const handleEditPost = (postToEdit: PostData) => {
+    setPost(postToEdit); // Set the post that needs to be edited
+    setModalOpen(true); // Open the modal for editing
   };
 
   return (
@@ -30,13 +37,24 @@ const Posts: React.FC<{ posts: PostProps[] }> = ({ posts }) => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {userPosts.map(({ title, body, userId, id }: PostProps) => (
-            <PostCard title={title} body={body} userId={userId} id={id} key={id} />
+            <PostCard
+              title={title}
+              body={body}
+              userId={userId}
+              id={id}
+              key={id}
+              onEdit={() => handleEditPost({ title, body, userId, id })} // Add edit functionality
+            />
           ))}
         </div>
       </main>
 
       {isModalOpen && (
-        <PostModal onClose={() => setModalOpen(false)} onSubmit={handleAddPost} />
+        <PostModal
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleAddPost}
+          post={post} // Pass the post state to the modal for editing
+        />
       )}
     </div>
   );
