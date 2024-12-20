@@ -22,6 +22,12 @@ export interface UserProps {
   };
 }
 
+export interface PostProps {
+  userId: number;
+  id: number;
+  title: string;
+  body: string;
+}
 
 export interface PostData {
   userId: number;
@@ -32,7 +38,7 @@ export interface PostData {
 
 export interface PostModalProps {
   onClose: () => void; // Function to close the modal
-  onSubmit: (post: PostData) => void; // Function to handle form submission
+  onSubmit: (post: PostData) => void; // Correct type for submitting a post
 }
 
 export interface Geo {
@@ -67,5 +73,5 @@ export interface UserData {
 
 export interface UserModalProps {
   onClose: () => void;
-  onSubmit: (user: UserData) => void;
+  onSubmit: (user: UserData) => void; 
 }
